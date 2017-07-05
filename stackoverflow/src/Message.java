@@ -1,23 +1,30 @@
 import java.io.*;
 
+import org.bson.Document;
+
 public class Message implements Serializable {
 
-    static final int SEARCH = 0, LOGIN = 1, LOGOUT = 2, REGISTER = 3;
+    static final int SEARCH = 0, LOGIN = 1, LOGOUT = 2, REGISTER = 3,SUGNUP = 4;
     private int type;
-    private String message;
+    //public String messages;
+    private Document info;
 
     // constructor
-    Message(int type, String message) {
+//    Message(int type, String message) {
+//        this.type = type;
+//        this.messages = message;
+//    }
+    Message(int type, Document info) {
         this.type = type;
-        this.message = message;
+        this.info = info;
     }
 
     // getters
     int getType() {
         return type;
     }
-    String getMessage() {
-        return message;
+    Document getInfo() {
+        return info;
     }
 }
 

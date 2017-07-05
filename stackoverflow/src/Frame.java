@@ -11,10 +11,10 @@ import javax.swing.UIManager.LookAndFeelInfo;
 public class Frame extends JFrame  {
 
 	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-
-	public Frame() {
+	Client c;
+	public Frame(Client c) {
 		// TODO Auto-generated constructor stub
-		
+		this.c = c;
 		for (LookAndFeelInfo a : UIManager.getInstalledLookAndFeels())// lookAndfellinfo
 			{
 			if ("Nimbus".equals(a.getName()))
@@ -36,6 +36,7 @@ public class Frame extends JFrame  {
 			}
 
         
+		//Client c = new Client("127.0.0.1",8000,"user");
 		setLayout(null);
 		setSize(d.width/2,d.height/2);
 		setLocation(100,100);
@@ -43,14 +44,12 @@ public class Frame extends JFrame  {
 		setTitle("Inverted Index");
 		GridLayout layoutthispanel = new GridLayout(1,1);
 		getContentPane().setLayout(layoutthispanel);
-		Panel panel = new Panel();
+		Panel panel = new Panel(this,c);
 		getContentPane().add(panel);
 		//panel.setFocusable(true);
 		//panel.addKeyListener(panel);
 		setVisible(true);
 	} 
-	public static void main(String[] args) {
-		new Frame();
-	}
+	
 
 }

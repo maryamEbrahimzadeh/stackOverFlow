@@ -14,8 +14,10 @@ public class Client {
     private String server, username;
     private int port;
 
-    private Client(String server, int port, String username) {
-        this.server = server;
+    
+    public Client(String server, int port, String username) {
+        
+    	this.server = server;
         this.port = port;
         this.username = username;
     }
@@ -67,7 +69,7 @@ public class Client {
     /*
      * To send a message to the Server
      */
-    private void sendMessage(Message msg) {
+    public void sendMessage(Message msg) {
         try {
             sOutput.writeObject(msg);
         }
@@ -99,45 +101,26 @@ public class Client {
     public static void main(String[] args) {
         // default values
         int portNumber = 8000;
-        String serverAddress = "DESKTOP-59E54A2";
-        String userName = "Anonymous1";
+        String serverAddress = "127.0.0.1";
+        String userName = "user";
 
+       
+        
         // create the Client object
         Client client = new Client(serverAddress, portNumber, userName);
+        
+        //new frame 
+        new Frame(client);
+        
         // test if we can start the connection to the Server
         // if it failed nothing we can do
         if(!client.start())
             return;
 
-        // wait for messages from user
-        Scanner scan = new Scanner(System.in);
-        // loop forever for message from the user
-        while(true) {
-            // read message from user
-            String msg = scan.nextLine();
-
-            // message SEARCH
-            if(msg.equalsIgnoreCase("SEARCH")) {
-                System.out.println("Enter the your query:");
-                String content = scan.nextLine();
-                client.sendMessage(new Message(Message.SEARCH, content));
-            }
-            // message LOGIN
-            else if(msg.equalsIgnoreCase("LOGIN")) {
-                client.sendMessage(new Message(Message.LOGIN, ""));
-            }
-            // message LOGOUT
-            else if(msg.equalsIgnoreCase("LOGOUT")) {
-                client.sendMessage(new Message(Message.LOGOUT, ""));
-                break;
-            }
-            // message REGISTER
-            else if(msg.equalsIgnoreCase("REGISTER")) {
-                client.sendMessage(new Message(Message.REGISTER, ""));
-            }
-        }
+        
+        
         // done disconnect
-        client.disconnect();
+       // client.disconnect();
     }
 
     /*

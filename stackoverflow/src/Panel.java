@@ -37,20 +37,19 @@ public class Panel extends JPanel implements MouseListener,KeyListener{
 	JButton browse;
 	JTextArea display;
 	JLabel j2;
-	JRadioButton bst,tst,trie,hash,hashtable;
-	JTextField t2,bsttext,tsttext,trietext,hashtext,hashtabletxt;
-	JButton build,reset,help,exit;
+	JLabel pass,email,username,name,favoritetxt;
+	JTextField t2,passtext,emailtext,usernametext,nametext;
+	JButton search,signin,signup,help,exit;
 	JFileChooser filechooser;
 	FileInputStream input;
 	File file;
+	Client c ;
+	Frame f ;
 	
 	
-	
-	
-	
-	
-	public Panel(){
-		
+	public Panel(Frame f,Client c){
+		this.f = f;
+		this.c = c;
 		//------------------------------GUI-----------------------------------------
 		
 		GridLayout layoutthispanel = new GridLayout(2, 1);
@@ -61,98 +60,53 @@ public class Panel extends JPanel implements MouseListener,KeyListener{
 		p0.setLayout(layoutthisuppanel);
 		
 		
-		j0=new JLabel ("Invreted Index", SwingConstants.CENTER);	
+		j0=new JLabel ("StackoverFlow", SwingConstants.CENTER);	
 		j0.setFont(new Font("SansSerif", Font.ITALIC,60));
 		p0.add(j0);
 		
-		j1=new JLabel ("please enter a folder addres to use browse button", SwingConstants.CENTER);	
-		j1.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		j1=new JLabel ("welcome to our site", SwingConstants.CENTER);	
+		j1.setFont(new Font("SansSerif", Font.ITALIC, 30));
 		j1.setBackground(Color.getHSBColor(154, 254, 25));
 		p0.add(j1);
 		
 		
 		
-		JPanel p1=new JPanel();
-		FlowLayout layout1 = new FlowLayout();
-		p1.setLayout(layout1);		
-		t1=new JTextField();
-		t1.setColumns(60);
-		p1.add(t1);
-		browse = new JButton("Browse");
-		browse.addMouseListener(this);
-		p1.add(browse);
-		p1.setVisible(true);
-		p0.add(p1);
-		
-		
-	
-	
-		
-		JPanel p2=new JPanel();
-		GridLayout layout2 = new GridLayout(1,8);
-		p2.setLayout(layout2);
-		hash = new JRadioButton("Hash");
-		p2.add(hash);
-		hashtext = new JTextField();
-		hashtext.setFont(new Font("SansSerif", Font.ITALIC,25));
-		p2.add(hashtext);
-		bst=new JRadioButton("BST");
-		p2.add(bst);
-		bsttext = new JTextField();
-		bsttext.setFont(new Font("SansSerif", Font.ITALIC,25));
-		p2.add(bsttext);
-		bst.setSelected(true);
-		tst=new JRadioButton("TST");
-		p2.add(tst);
-		tsttext = new JTextField();
-		tsttext.setFont(new Font("SansSerif", Font.ITALIC,25));
-		p2.add(tsttext);
-		trie=new JRadioButton("TRIE");
-		p2.add(trie);
-		trietext = new JTextField();
-		trietext.setFont(new Font("SansSerif", Font.ITALIC,25));
-		p2.add(trietext);
-		hashtable=new JRadioButton("HASHTABE");
-		p2.add(hashtable);
-		hashtabletxt = new JTextField();
-		hashtabletxt.setFont(new Font("SansSerif", Font.ITALIC,25));
-		p2.add(hashtabletxt);
-		ButtonGroup bg=new ButtonGroup();
-		bg.add(bst);
-		bg.add(tst);
-		bg.add(trie);
-		bg.add(hash);
-		bg.add(hashtable);
-		p1.setVisible(true);
-		p0.add(p2);
 		
 		
 		t2=new JTextField();
-		t2.setText("please enter your command");
+		t2.setText("please enter your question");
 		t2.setFont(new Font("SansSerif", Font.ITALIC,40));
 		p0.add(t2);
 		
+				
+
+		Dimension d1 = new Dimension(d.width/15, d.height/30);
 		JPanel p3=new JPanel();
 		FlowLayout layout3 = new FlowLayout();
 		p3.setLayout(layout3);
-		build =new JButton("build");
-		Dimension d1 = new Dimension(d.width/15, d.height/30);
-		build.setPreferredSize(d1);
-		build.addMouseListener(this);
-		p3.add(build);
-		reset=new JButton("reset");
-		reset.setPreferredSize(d1);
-		reset.addMouseListener(this);
-		reset.addKeyListener(this);;
-		p3.add(reset);
-		exit=new JButton("exit");
-		exit.setPreferredSize(d1);
-		exit.addMouseListener(this);
-		p3.add(exit);
-		help=new JButton("help");
-		help.setPreferredSize(d1);
-		help.addMouseListener(this);
-		p3.add(help);
+		signin=new JButton("sign in");
+		signin.setPreferredSize(d1);
+		signin.addMouseListener(this);
+		signin.addKeyListener(this);;
+		p3.add(signin);
+		signup=new JButton("sign up");
+		signup.setPreferredSize(d1);
+		signup.addMouseListener(this);
+		signup.addKeyListener(this);;
+		p3.add(signup);
+		search =new JButton("search");
+		search.setPreferredSize(d1);
+		search.addMouseListener(this);
+		p3.add(search);
+		
+//		exit=new JButton("exit");
+//		exit.setPreferredSize(d1);
+//		exit.addMouseListener(this);
+//		p3.add(exit);
+//		help=new JButton("help");
+//		help.setPreferredSize(d1);
+//		help.addMouseListener(this);
+//		p3.add(help);
 		p3.setVisible(true);
 		p0.add(p3);
 		
@@ -193,7 +147,12 @@ public class Panel extends JPanel implements MouseListener,KeyListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-	
+		if(e.getSource()==signup){
+			this.setVisible(false);
+			f.getContentPane().add(new signuppanel(f,c));
+			
+			
+		}
 		
 	}
 
@@ -210,11 +169,7 @@ public class Panel extends JPanel implements MouseListener,KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_UP){
-			
-				
-					
-		}
+		
 	}
 
 

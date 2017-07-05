@@ -2,6 +2,21 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="libs/mongo-java-driver-2.13.3-javadoc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/mongo-java-driver-2.13.3-javadoc.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/libs/mongo-java-driver-2.13.3-javadoc.jar"/>
+	<classpathentry kind="lib" path="bson-3.4.0-beta1-javadoc.jar"/>
+	<classpathentry kind="lib" path="bson-3.4.0-beta1.jar"/>
+	<classpathentry kind="lib" path="mongodb-driver-3.4.0-beta1-sources.jar"/>
+	<classpathentry kind="lib" path="mongodb-driver-core-3.4.0-beta1-javadoc.jar"/>
+	<classpathentry kind="lib" path="mongodb-driver-core-3.4.0-beta1.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/bson-3.4.0-beta1.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/bson-3.4.0-beta1-javadoc.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/bson-3.4.0-beta1-sources.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/mongodb-driver-3.4.0-beta1.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/mongodb-driver-3.4.0-beta1-javadoc.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/mongodb-driver-3.4.0-beta1-sources.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/mongodb-driver-core-3.4.0-beta1.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/mongodb-driver-core-3.4.0-beta1-javadoc.jar"/>
+	<classpathentry kind="lib" path="D:/mongodb/stackoverflow/mongodb-driver-core-3.4.0-beta1-sources.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

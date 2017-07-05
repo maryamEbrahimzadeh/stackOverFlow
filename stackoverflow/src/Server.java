@@ -41,6 +41,7 @@ public class Server {
         al = new ArrayList<ClientThread>();
         mongoClient = new MongoClient( "localhost" , 27017 );
         database  = mongoClient.getDatabase("QASystem");
+       // database.createCollection("user");
     }
 
     private void start() {
@@ -97,18 +98,29 @@ public class Server {
     }
 
 
-    private synchronized void answer(String message, ObjectOutputStream sOutput){
-        String[] words = message.split("\\s");//splits the string based on whitespace
-        MongoCollection<Document> collection = database.getCollection("questions");
-        Vector<String> keywords = new Vector<>();
-        Document allKeywords = collection.find(new Document("allKeywords", new Document("$exists", true))).first();
-        ArrayList<String> q = (ArrayList<String>) allKeywords.get("allKeywords");
-        for(String w:words){
-            if (q.contains(w)){
-                keywords.add(w);
-                System.out.println(w);
-            }
-        }
+    private synchronized void answer(int type,Document info, ObjectOutputStream sOutput){
+        
+    	if(type == Message.SUGNUP){
+    		System.out.println("fine");
+    	 MongoCollection<Document> collection = database.getCollection("USER");
+    	  collection.insertOne(info);
+    	  Document myDoc = collection.find().first();
+    	 // collection.deleteOne(myDoc);
+    	  //myDoc  = collection.find().first();
+    	  System.out.println(myDoc.toJson());
+    	}
+    	
+    	
+//    	MongoCollection<Document> collection = database.getCollection("questions");
+//        Vector<String> keywords = new Vector<>();
+//        Document allKeywords = collection.find(new Document("allKeywords", new Document("$exists", true))).first();
+//        ArrayList<String> q = (ArrayList<String>) allKeywords.get("allKeywords");
+//        for(String w:words){
+//            if (q.contains(w)){
+//                keywords.add(w);
+//                System.out.println(w);
+//            }
+//        }
 
     }
 
@@ -192,26 +204,27 @@ public class Server {
                     break;
                 }
                 // the message part of the Message
-                String message = cm.getMessage();
+                Document info = cm.getInfo();
 
                 // Switch on the type of message receive
                 switch(cm.getType()) {
 
-                    case Message.SEARCH:
-                        answer(message, sOutput);
+                    case Message.SUGNUP:
+                    	System.out.println("how are you");
+                        answer(cm.getType(),info, sOutput);
                         break;
-                    case Message.LOGOUT:
-                        display(username + " disconnected with a LOGOUT message.");
-                        keepGoing = false;
-                        break;
-                    case Message.LOGIN:
-                        writeMsg("List of the users connected at " + sdf.format(new Date()) + "\n");
-                        // scan al the users connected
-                        for(int i = 0; i < al.size(); ++i) {
-                            ClientThread ct = al.get(i);
-                            writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
-                        }
-                        break;
+//                    case Message.LOGOUT:
+//                        display(username + " disconnected with a LOGOUT message.");
+//                        keepGoing = false;
+//                        break;
+//                    case Message.LOGIN:
+//                        writeMsg("List of the users connected at " + sdf.format(new Date()) + "\n");
+//                        // scan al the users connected
+//                        for(int i = 0; i < al.size(); ++i) {
+//                            ClientThread ct = al.get(i);
+//                            writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
+//                        }
+//                        break;
                 }
             }
             // remove myself from the arrayList containing the list of the
