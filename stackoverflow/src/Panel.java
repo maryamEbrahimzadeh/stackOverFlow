@@ -1,5 +1,5 @@
 
-
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -13,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileInputStream;
 
+import javax.print.Doc;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -24,174 +25,163 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import org.bson.Document;
 
-
-
-
-
-public class Panel extends JPanel implements MouseListener,KeyListener{
+public class Panel extends JPanel implements MouseListener, KeyListener {
 
 	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-	JLabel j1,j0;
+	JLabel j1, j0;
 	JTextField t1;
 	JButton browse;
 	JTextArea display;
 	JLabel j2;
-	JLabel pass,email,username,name,favoritetxt;
-	JTextField t2,passtext,emailtext,usernametext,nametext;
-	JButton search,signin,signup,help,exit;
+	JLabel pass, email, username, name, favoritetxt;
+	JTextField t2, passtext, emailtext, usernametext, nametext;
+	JButton search, signin, signup, help, exit;
 	JFileChooser filechooser;
 	FileInputStream input;
 	File file;
-	Client c ;
-	Frame f ;
-	
-	
-	public Panel(Frame f,Client c){
+	Client c;
+	Frame f;
+	loginpanel plogin;
+	signuppanel psignup;
+	private JTextField t3;
+
+	public Panel(Frame f, Client c) {
 		this.f = f;
 		this.c = c;
-		//------------------------------GUI-----------------------------------------
-		
+		// ------------------------------GUI-----------------------------------------
+
 		GridLayout layoutthispanel = new GridLayout(2, 1);
 		this.setLayout(layoutthispanel);
-		
+
 		JPanel p0 = new JPanel();
 		GridLayout layoutthisuppanel = new GridLayout(6, 1);
 		p0.setLayout(layoutthisuppanel);
-		
-		
-		j0=new JLabel ("StackoverFlow", SwingConstants.CENTER);	
-		j0.setFont(new Font("SansSerif", Font.ITALIC,60));
+
+		j0 = new JLabel("StackoverFlow", SwingConstants.CENTER);
+		j0.setFont(new Font("SansSerif", Font.ITALIC, 60));
 		p0.add(j0);
-		
-		j1=new JLabel ("welcome to our site", SwingConstants.CENTER);	
+
+		j1 = new JLabel("welcome to our site", SwingConstants.CENTER);
 		j1.setFont(new Font("SansSerif", Font.ITALIC, 30));
 		j1.setBackground(Color.getHSBColor(154, 254, 25));
 		p0.add(j1);
-		
-		
-		
-		
-		
-		t2=new JTextField();
-		t2.setText("please enter your question");
-		t2.setFont(new Font("SansSerif", Font.ITALIC,40));
-		p0.add(t2);
-		
-				
 
-		Dimension d1 = new Dimension(d.width/15, d.height/30);
-		JPanel p3=new JPanel();
+		t2 = new JTextField();
+		t2.setText("please enter your question");
+		t2.setFont(new Font("SansSerif", Font.ITALIC, 40));
+		p0.add(t2);
+
+
+
+		Dimension d1 = new Dimension(d.width / 15, d.height / 30);
+		JPanel p3 = new JPanel();
 		FlowLayout layout3 = new FlowLayout();
 		p3.setLayout(layout3);
-		signin=new JButton("sign in");
+		signin = new JButton("sign in");
 		signin.setPreferredSize(d1);
 		signin.addMouseListener(this);
-		signin.addKeyListener(this);;
+		signin.addKeyListener(this);
+		;
 		p3.add(signin);
-		signup=new JButton("sign up");
+		signup = new JButton("sign up");
 		signup.setPreferredSize(d1);
 		signup.addMouseListener(this);
-		signup.addKeyListener(this);;
+		signup.addKeyListener(this);
+		;
 		p3.add(signup);
-		search =new JButton("search");
+		search = new JButton("search");
 		search.setPreferredSize(d1);
 		search.addMouseListener(this);
 		p3.add(search);
-		
-//		exit=new JButton("exit");
-//		exit.setPreferredSize(d1);
-//		exit.addMouseListener(this);
-//		p3.add(exit);
-//		help=new JButton("help");
-//		help.setPreferredSize(d1);
-//		help.addMouseListener(this);
-//		p3.add(help);
+
+		// exit=new JButton("exit");
+		// exit.setPreferredSize(d1);
+		// exit.addMouseListener(this);
+		// p3.add(exit);
+		// help=new JButton("help");
+		// help.setPreferredSize(d1);
+		// help.addMouseListener(this);
+		// p3.add(help);
 		p3.setVisible(true);
 		p0.add(p3);
-		
+
 		this.add(p0);
-		
-		display=new JTextArea();
-		display.setFont(new Font("SansSerif", Font.ITALIC,30));
-        JScrollPane scroll = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setMinimumSize(new Dimension(160, 200));
-        scroll.setPreferredSize(new Dimension(160, 200));
-        this.add(scroll);
 
+		display = new JTextArea();
+		display.setFont(new Font("SansSerif", Font.ITALIC, 30));
+		JScrollPane scroll = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scroll.setMinimumSize(new Dimension(160, 200));
+		scroll.setPreferredSize(new Dimension(160, 200));
+		this.add(scroll);
 
-		
 		this.setBackground(Color.getHSBColor(154, 254, 25));
 		p0.addKeyListener(this);
-		
-		//----------------------------end GUI------------------------------------
+
+		// ----------------------------end
+		// GUI------------------------------------
 
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		if(e.getSource()==signup){
+		if (e.getSource() == signup) {
 			this.setVisible(false);
-			f.getContentPane().add(new signuppanel(f,c));
+			psignup = new signuppanel(f, c);
+			f.getContentPane().add(psignup, BorderLayout.CENTER);
+		} else if (e.getSource() == signin) {
+			this.setVisible(false);
+			plogin = new loginpanel(f, c);
+			f.getContentPane().add(plogin);
+		} else if (e.getSource() == search) {
 			
+			Document q = new Document("question", t2.getText());
+			c.sendMessage(new Message(Message.SEARCH2, q));
 			
 		}
-		
+
 	}
-
-
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-
-
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		
+
 	}
-
-
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		
+
 	}
-
-
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		
+
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
 
 }

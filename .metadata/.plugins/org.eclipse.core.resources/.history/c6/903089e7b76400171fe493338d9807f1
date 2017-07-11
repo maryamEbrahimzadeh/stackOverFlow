@@ -1,0 +1,217 @@
+import java.net.*;
+import java.awt.BorderLayout;
+import java.io.*;
+import java.util.*;
+
+public class Client {
+
+	// for I/O
+	private ObjectInputStream sInput; // to read from the socket
+	private ObjectOutputStream sOutput; // to write on the socket
+	private Socket socket;
+
+	static Client client;
+	static Frame f;
+	MainPanel mp;
+	// the Server, the port and the username
+	private String server, username;
+	private int port;
+
+	public Client(String server, int port, String username) {
+
+		this.server = server;
+		this.port = port;
+		this.username = username;
+	}
+
+	private boolean start() {
+		// try to connect to the Server
+		try {
+			socket = new Socket(server, port);
+		}
+		// if it failed not much I can so
+		catch (Exception ec) {
+			System.out.println("Error connecting to Server:" + ec);
+			return false;
+		}
+
+		String msg = "Connection accepted " + socket.getInetAddress() + ":" + socket.getPort();
+		System.out.println(msg);
+
+		/* Creating both Data Stream */
+		try {
+			sInput = new ObjectInputStream(socket.getInputStream());
+			sOutput = new ObjectOutputStream(socket.getOutputStream());
+		} catch (IOException eIO) {
+			System.out.println("Exception creating new Input/output Streams: " + eIO);
+			return false;
+		}
+
+		// creates the Thread to listen from the Server
+		new ListenFromServer().start();
+		// Send our username to the Server this is the only message that we
+		// will send as a String. All other messages will be Message objects
+		try {
+			sOutput.writeObject(username);
+		} catch (IOException eIO) {
+			System.out.println("Exception doing login : " + eIO);
+			disconnect();
+			return false;
+		}
+		// success we inform the caller that it worked
+		return true;
+	}
+
+	/*
+	 * To send a message to the Server
+	 */
+	public void sendMessage(Message msg) {
+		try {
+			sOutput.writeObject(msg);
+		} catch (IOException e) {
+			System.out.println("Exception writing to Server: " + e);
+		}
+	}
+
+	/*
+	 * When something goes wrong Close the Input/Output streams and disconnect
+	 * not much to do in the catch clause
+	 */
+	private void disconnect() {
+		try {
+			if (sInput != null)
+				sInput.close();
+		} catch (Exception ignored) {
+		} // not much else I can do
+		try {
+			if (sOutput != null)
+				sOutput.close();
+		} catch (Exception ignored) {
+		} // not much else I can do
+		try {
+			if (socket != null)
+				socket.close();
+		} catch (Exception ignored) {
+		} // not much else I can do
+
+	}
+
+	public static void main(String[] args) {
+		// default values
+		int portNumber = 8000;
+		String serverAddress = "127.0.0.1";
+		String userName = "USER";
+
+		// create the Client object
+		client = new Client(serverAddress, portNumber, userName);
+
+		// new frame
+		f = new Frame(client);
+		
+
+		// test if we can start the connection to the Server
+		// if it failed nothing we can do
+		if (!client.start())
+			return;
+
+		// done disconnect
+		// client.disconnect();
+	}
+
+	/*
+	 * a class that waits for the message from the Server and append them to the
+	 * JTextArea if we have a GUI or simply System.out.println() it in console
+	 * mode
+	 */
+	class ListenFromServer extends Thread {
+
+		private answerPanel ap;
+		private RatePanel rp;
+
+		public void run() {
+			while (true) {
+				try {
+					Message msg = (Message) sInput.readObject();
+					if (msg.getType() == Message.LOGIN) {
+						//System.out.println("Client.ListenFromServer.run()");
+						if (msg.getIslogin()) {
+							f.panel.plogin.setVisible(false);
+							 mp = new MainPanel(f, client,msg.getUser());
+							f.getContentPane().add(mp);
+						} else {
+							f.panel.plogin.usernametext.setText("");
+							f.panel.plogin.passtext.setText("");
+						}
+
+					}if (msg.getType() == Message.LOGOUT || msg.getType() == Message.DELETE) {
+						mp.setVisible(false);
+						f.panel.setVisible(true);						
+
+					}else if (msg.getType() == Message.SUGNUP){
+						//System.out.println("Client.ListenFromServer.run()");
+						if (!msg.getIslogin()) {
+							//System.out.println("here");
+							f.panel.psignup.setVisible(true);
+							f.panel.psignup.nametext.setText("");
+							f.panel.psignup.usernametext.setText("");
+							f.panel.psignup.emailtext.setText("");
+							f.panel.psignup.passtext.setText("");
+						}else{
+							//System.out.println("here2");
+							f.panel.signup.setVisible(false);
+							mp = new MainPanel(f, client,msg.getUser());
+							f.getContentPane().add(mp);
+							
+						}
+					}else if(msg.getType() == Message.SEARCH ||msg.getType() == Message.SHOWALL  ||msg.getType() == Message.SHOWFAV ){
+						
+						String answer =msg.getquestion();
+						mp.display.append("\n"+ answer);
+					}else if(msg.getType() == Message.SEARCH2  ){
+						
+						String answer =msg.getquestion();
+						f.panel.display.append("\n"+ answer);
+						//mp.display.append("\n"+ answer);
+					}else if(msg.getType() == Message.ASK){
+						mp.display.setText("Your question added.");
+					}else if(msg.getType()== Message.QUESTIONTOANSWER){
+						mp.setVisible(false);
+						f.setVisible(false);
+						ap = new answerPanel(f,client,msg.getUser(), msg.getqu());
+						f.getContentPane().add(ap,BorderLayout.CENTER);
+						f.setVisible(true);
+						ap.setVisible(true);
+					}else if(msg.getType()== Message.SHOWTAG){
+						mp.tp.tagstext.append(msg.getquestion());
+						
+					}else if(msg.getType()==Message.ANSWER){
+						ap.setVisible(false);
+						mp.setVisible(true);
+					}else if(msg.getType()==Message.RATE){
+						rp.setVisible(false);
+						mp.setVisible(true);
+					}else if(msg.getType()==Message.RATE1){
+						System.out.println("hiiiiiiiiiii");
+						if(msg.getIsQuistioner()){
+						    f.setVisible(false);
+							rp = new RatePanel(f, client,msg.getqu());
+							mp.setVisible(false);
+							rp.setVisible(true);
+							f.getContentPane().add(rp);
+							f.setVisible(true);
+						}else{
+							//f.setVisible(true);
+							mp.setVisible(true);
+						}
+					}
+				} catch (IOException e) {
+					System.out.println("Server has close the connection: " + e);
+					break;
+				}
+				// can't happen with a String object but need the catch anyhow
+				catch (ClassNotFoundException ignored) {
+				}
+			}
+		}
+	}
+}

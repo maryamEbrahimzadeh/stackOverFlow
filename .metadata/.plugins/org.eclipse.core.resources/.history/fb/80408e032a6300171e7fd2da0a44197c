@@ -1,0 +1,155 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.security.cert.PKIXRevocationChecker.Option;
+import java.util.Date;
+import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JMenu;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import org.bson.Document;
+
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+/**
+ *
+ * @author fatemeh saligheh
+ */
+public class answerPanel extends JPanel implements MouseListener, KeyListener, ActionListener {
+    
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+  //JTextField t1;
+  JButton registration;
+  JTextArea question;
+  JTextField answer;
+  Client c;
+  Frame f;
+//  JMenuBar menubar = new JMenuBar();
+//  JMenuItem allQus;
+//  JMenuItem favQus;
+//  JTextField asktag;
+  Document user;
+
+  public answerPanel(Frame f, Client c) {
+    this.f = f;
+    this.c = c;
+    this.user = user;
+//     —----------------------------GUI---------------------------------------
+    
+
+
+    JPanel p0 = new JPanel();
+    GridLayout layoutthisuppanel = new GridLayout(6, 1);
+    p0.setLayout(layoutthisuppanel);
+    //p0.add();
+
+    Dimension d1 = new Dimension(d.width / 15, d.height / 30);
+    JPanel p3 = new JPanel();
+    BorderLayout layout3 = new BorderLayout();
+    p3.setLayout(layout3);
+
+
+
+    registration = new JButton("search");
+    registration.setPreferredSize(d1);
+    registration.addMouseListener(this);
+    registration.addActionListener(this);
+    p3.add(registration);
+//
+    p3.setVisible(true);
+//    
+//
+    answer=new JTextField("enter your ask question");
+    answer.setFont(new Font("SansSerif", Font.ITALIC, 30));
+    answer=new JTextField("enter your  questions tag(s)");
+    answer.setFont(new Font("SansSerif", Font.ITALIC, 30));
+//    
+    question = new JTextArea();
+    question.setFont(new Font("SansSerif", Font.ITALIC, 30));
+    JScrollPane scroll = new JScrollPane(question, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                    JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    scroll.setMinimumSize(new Dimension(10, 20));
+    scroll.setPreferredSize(new Dimension(10, 20));
+    
+//    searchQuestion = new JTextField("enter your search question ");
+//    searchQuestion.setFont(new Font("SansSerif", Font.ITALIC, 30));
+//    p0.add(searchQuestion);
+//    
+    p0.add(p3);
+//              p0.add(asktext);
+//              p0.add(asktag);
+//    p0.add(ask);
+//    this.add(p0);
+    this.add(scroll);
+    this.setBackground(Color.getHSBColor(154, 254, 25));
+    p0.addKeyListener(this);
+
+
+  }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    @Override
+    public void mouseExited(MouseEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+}

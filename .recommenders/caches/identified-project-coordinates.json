@@ -1,1 +1,1 @@
-{}
+[[{"location":"D:\\mongodb\\stackoverflow","type":"PROJECT","hints":{"PROJECT_NAME":"stackoverflow"}},"ABSENT"],[{"location":"D:\\mongodb\\stackoverflow\\bson-3.4.0-beta1.jar","type":"JAR","hints":{}},"org.mongodb.bson:org.mongodb.bson:3.4.0"],[{"location":"C:\\Program Files\\Java\\jre1.8.0_73","type":"JRE","hints":{"EXECUTION_ENVIRONMENT":"JavaSE-1.8"}},"jre:jre:1.8.0"]]

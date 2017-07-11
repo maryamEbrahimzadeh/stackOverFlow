@@ -5,6 +5,11 @@ import java.util.*;
 
 import com.mongodb.*;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Indexes;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 import com.mongodb.client.MongoCursor;
@@ -14,263 +19,625 @@ import static com.mongodb.client.model.Updates.*;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.conversions.Bson;
 
-import java.util.List;
+import javax.swing.plaf.synth.SynthSpinnerUI;
 
 public class Server {
-    // a unique ID for each connection
-    private static int uniqueId;
-    // an ArrayList to keep the list of the Client
-    private ArrayList<ClientThread> al;
-    // to display time
-    private SimpleDateFormat sdf;
-    // the port number to listen for connection
-    private int port;
-    // the boolean that will be turned of to stop the Server
-    private boolean keepGoing;
-    // to make a connection to a running MongoDB instance
-    private MongoClient mongoClient;
-    // to access a database
-    private MongoDatabase database;
+	// a unique ID for each connection
+	private static int uniqueId;
+	// an ArrayList to keep the list of the Client
+	private ArrayList<ClientThread> al;
+	// to display time
+	private SimpleDateFormat sdf;
+	// the port number to listen for connection
+	private int port;
+	// the boolean that will be turned of to stop the Server
+	private boolean keepGoing;
+	// to make a connection to a running MongoDB instance
+	private MongoClient mongoClient;
+	// to access a database
+	private MongoDatabase database;
 
-    private Server(int port) {
-        // the port
-        this.port = port;
-        // to display hh:mm:ss
-        sdf = new SimpleDateFormat("HH:mm:ss");
-        // ArrayList for the Client list
-        al = new ArrayList<ClientThread>();
-        mongoClient = new MongoClient( "localhost" , 27017 );
-        database  = mongoClient.getDatabase("QASystem");
-       // database.createCollection("user");
-    }
+	private Server(int port) {
+		// the port
+		this.port = port;
+		// to display :mm:ss
+		sdf = new SimpleDateFormat("HH:mm:ss");
+		// ArrayList for the Client list
+		al = new ArrayList<ClientThread>();
+		mongoClient = new MongoClient("localhost", 27017);
+		database = mongoClient.getDatabase("QASystem");
+		// database.createCollection("USER");
+		// database.createCollection("tag");
+		// database.createCollection("question");
+		 //database.getCollection("question").drop();
 
-    private void start() {
-        keepGoing = true;
+		MongoCollection<Document> collection = database.getCollection("tag");
+		for (Document cur : collection.find()) {
+			System.out.println(cur.toJson());
+		}
+		MongoCollection<Document> collection2 = database.getCollection("question");
+		for (Document cur : collection2.find()) {
+			System.out.println(cur);
+		}
+
+	}
+
+	private void start() {
+		keepGoing = true;
 		/* create socket Server and wait for connection requests */
-        try
-        {
-            // the socket used by the Server
-            ServerSocket serverSocket = new ServerSocket(port);
+		try {
+			// the socket used by the Server
+			ServerSocket serverSocket = new ServerSocket(port);
 
-            // infinite loop to wait for connections
-            while(keepGoing)
-            {
-                // format message saying we are waiting
-                display("Server waiting for Clients on port " + port + ".");
+			// infinite loop to wait for connections
+			while (keepGoing) {
+				// format message saying we are waiting
+				display("Server waiting for Clients on port " + port + ".");
 
-                Socket socket = serverSocket.accept();  	// accept connection
-                // if I was asked to stop
-                if(!keepGoing)
-                    break;
-                ClientThread t = new ClientThread(socket);  // make a thread of it
-                al.add(t);									// save it in the ArrayList
-                t.start();
-            }
-            // I was asked to stop
-            try {
-                serverSocket.close();
-                for (ClientThread tc : al) {
-                    try {
-                        tc.sInput.close();
-                        tc.sOutput.close();
-                        tc.socket.close();
-                    } catch (IOException ioE) {
-                        // not much I can do
-                    }
-                }
-            }
-            catch(Exception e) {
-                display("Exception closing the Server and clients: " + e);
-            }
-        }
-        // something went bad
-        catch (IOException e) {
-            String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
-            display(msg);
-        }
-    }
+				Socket socket = serverSocket.accept(); // accept connection
+				// if I was asked to stop
+				if (!keepGoing)
+					break;
+				ClientThread t = new ClientThread(socket); // make a thread of
+															// it
+				al.add(t); // save it in the ArrayList
+				t.start();
+			}
+			// I was asked to stop
+			try {
+				serverSocket.close();
+				for (ClientThread tc : al) {
+					try {
+						tc.sInput.close();
+						tc.sOutput.close();
+						tc.socket.close();
+					} catch (IOException ioE) {
+						// not much I can do
+					}
+				}
+			} catch (Exception e) {
+				display("Exception closing the Server and clients: " + e);
+			}
+		}
+		// something went bad
+		catch (IOException e) {
+			String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
+			display(msg);
+		}
+	}
 
+	// Display an event
+	private void display(String msg) {
+		String time = sdf.format(new Date()) + " " + msg;
+		System.out.println(time);
+	}
 
-    //Display an event
-    private void display(String msg) {
-        String time = sdf.format(new Date()) + " " + msg;
-        System.out.println(time);
-    }
+	private synchronized void answer(int type, Document info, ObjectOutputStream sOutput) {
 
+		if (type == Message.SUGNUP) {
 
-    private synchronized void answer(int type,Document info, ObjectOutputStream sOutput){
-        
-    	if(type == Message.SUGNUP){
-    		System.out.println("fine");
-    	 MongoCollection<Document> collection = database.getCollection("USER");
-    	  collection.insertOne(info);
-    	  Document myDoc = collection.find().first();
-    	 // collection.deleteOne(myDoc);
-    	  //myDoc  = collection.find().first();
-    	  System.out.println(myDoc.toJson());
-    	}
-    	
-    	
-//    	MongoCollection<Document> collection = database.getCollection("questions");
-//        Vector<String> keywords = new Vector<>();
-//        Document allKeywords = collection.find(new Document("allKeywords", new Document("$exists", true))).first();
-//        ArrayList<String> q = (ArrayList<String>) allKeywords.get("allKeywords");
-//        for(String w:words){
-//            if (q.contains(w)){
-//                keywords.add(w);
-//                System.out.println(w);
-//            }
-//        }
+			MongoCollection<Document> collection = database.getCollection("USER");
+			boolean flag = false;
+			for (Document cur : collection.find()) {
 
-    }
+				if (cur.get("username").equals(info.get("username")) && cur.get("email").equals(info.get("email"))) {
 
-    // for a Client who logoff using the LOGOUT message
-    private synchronized void remove(int id) {
-        // scan the array list until we found the Id
-        for(int i = 0; i < al.size(); ++i) {
-            ClientThread ct = al.get(i);
-            // found it
-            if(ct.id == id) {
-                al.remove(i);
-                return;
-            }
-        }
-    }
+					flag = true;
 
-    public static void main(String[] args) {
-        // start Server on port 8000 unless a PortNumber is specified
-        int portNumber = 8000;
+				}
+			}
 
-        // create a Server object and start it
-        Server server = new Server(portNumber);
-        server.start();
-    }
+			if (!flag) {
+				collection.insertOne(info);
+				try {
+					sOutput.writeObject(new Message(Message.SUGNUP, true, info));
 
-    /** One instance of this thread will run for each Client */
-    class ClientThread extends Thread {
-        // the socket where to listen/talk
-        Socket socket;
-        ObjectInputStream sInput;
-        ObjectOutputStream sOutput;
-        // my unique id (easier for disconnection)
-        int id;
-        // the Username of the Client
-        String username;
-        // the only type of message a will receive
-        Message cm;
-        // the date I connect
-        String date;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					sOutput.writeObject(new Message(Message.SUGNUP, false, info));
 
-        ClientThread(Socket socket) {
-            // a unique id
-            id = ++uniqueId;
-            this.socket = socket;
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		} else if (type == Message.LOGIN) {
+			MongoCollection<Document> collection = database.getCollection("USER");
+			boolean flag = false;
+			for (Document cur : collection.find(info)) {
+				// if (cur.get("username").equals(info.get("username"))
+				// && cur.get("password").equals(info.get("password"))) {
+				// System.out.println(cur.toJson());
+				Bson newValue = new Document("islogin", "true");
+				Bson updateOperationDocument = new Document("$set", newValue);
+				collection.updateOne(cur, updateOperationDocument);
+				try {
+					flag = true;
+					sOutput.writeObject(new Message(Message.LOGIN, true, cur));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				// }
+			}
+			if (!flag) {
+				try {
+					sOutput.writeObject(new Message(Message.LOGIN, false, info));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} else if (type == Message.SEARCH) {
+			MongoCollection<Document> collectionTag = database.getCollection("tag");
+			// find question tags
+			String[] words = (info.getString("question")).split("\\s+");
+			// questionstag is this new q tag
+			//find its valid key word 
+			 StringBuilder keywords = new StringBuilder();
+			for(String w: words){
+		        if(collectionTag.find(eq("tag", w)).first()!=null){
+		          keywords.append(w+" ");
+		        }
+		      }
+			// find in common tags for each question
+			MongoCollection<Document> collectiontquestion = database.getCollection("question");
+			collectiontquestion.createIndex(Indexes.text("tags"));
+           
+		    Iterator<Document> itrator = collectiontquestion.find(Filters.text(keywords.toString()))
+		    		 .projection(Projections.metaTextScore("score"))
+		             .sort(Sorts.metaTextScore("score"))
+		    		.iterator();
+		      while(itrator.hasNext()){	
+		        Document d = itrator.next();
+		        String s = d.toJson();
+				try {
+					sOutput.writeObject(new Message(Message.SEARCH, s));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		      }
+			
+		} else if (type == Message.ASK) {
+			MongoCollection<Document> collectiontquestion = database.getCollection("question");
+			collectiontquestion.insertOne(info);
+			Bson newValue = new Document("qId", (int) collectiontquestion.count());
+			Bson updateOperationDocument = new Document("$set", newValue);
+			collectiontquestion.updateOne(info, updateOperationDocument);
+			MongoCollection<Document> collectionttag = database.getCollection("tag");
+			Vector<String> tags = (Vector<String>) info.get("tags");
+			for (String d : tags) {
+				boolean flag = false;
+				for (Document dd : collectionttag.find(eq("tag",d))) {
+					flag = true;
+				}
+				if (!flag) {
+					collectionttag.insertOne(new Document("tag",d));
+				}
+			}
+			try {
+				sOutput.writeObject(new Message(Message.ASK));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else if (type == Message.SHOWALL) {
+			MongoCollection<Document> collectiontquestion = database.getCollection("question");
+			FindIterable<Document> docs = collectiontquestion.find().sort(new Document("date",-1));
+			MongoCursor<Document> cursor = docs.iterator();
+			while (cursor.hasNext()) {
+				Document d = cursor.next();
+
+				String s = d.toJson();
+				try {
+					sOutput.writeObject(new Message(Message.SHOWALL, s));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} else if (type == Message.SEARCH2) {
+			MongoCollection<Document> collectionTag = database.getCollection("tag");
+			// find question tags
+			String[] words = (info.getString("question")).split("\\s+");
+			// questionstag is this new q tag
+			//find its valid key word 
+			 StringBuilder keywords = new StringBuilder();
+			for(String w: words){
+		        if(collectionTag.find(eq("tag", w)).first()!=null){
+		          keywords.append(w+" ");
+		        }
+		      }
+			// find in common tags for each question
+			MongoCollection<Document> collectiontquestion = database.getCollection("question");
+			collectiontquestion.createIndex(Indexes.text("tags"));
+           
+		    Iterator<Document> itrator = collectiontquestion.find(Filters.text(keywords.toString()))
+		    		 .projection(Projections.metaTextScore("score"))
+		             .sort(Sorts.metaTextScore("score"))
+		    		.iterator();
+		      while(itrator.hasNext()){	
+		        Document d = itrator.next();
+		        String s = d.toJson();
+				try {
+					sOutput.writeObject(new Message(Message.SEARCH2, s));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		      }
+		} else if (type == Message.SHOWFAV) {
+			
+			 StringBuilder keywords = new StringBuilder();
+			keywords.append(info.getString("intrest"));
+			// find in common tags for each question
+			MongoCollection<Document> collectiontquestion = database.getCollection("question");
+			collectiontquestion.createIndex(Indexes.text("tags"));           
+		    Iterator<Document> itrator = collectiontquestion.find(Filters.text(keywords.toString()))
+		    		.iterator();
+		      while(itrator.hasNext()){	
+		        Document d = itrator.next();
+		        String s = d.toJson();
+				try {
+					sOutput.writeObject(new Message(Message.SEARCH, s));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		      }
+		}else if(type==Message.LOGOUT){
+			MongoCollection<Document> collection = database.getCollection("USER");
+			Bson newValue = new Document("islogin", "false");
+			Bson updateOperationDocument = new Document("$set", newValue);
+			collection.updateOne(info, updateOperationDocument);
+			try {
+				sOutput.writeObject(new Message(Message.LOGOUT,info));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}else if(type == Message.DELETE){
+			MongoCollection<Document> collection = database.getCollection("USER");
+			collection.deleteOne(eq("username",info.getString("username")));
+			try {
+				sOutput.writeObject(new Message(Message.DELETE,info));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private synchronized void answeraquistion(int type, Document answer, int qid, ObjectOutputStream sOutput) {
+	    if (type == Message.ANSWER) {
+	      MongoCollection<Document> collectiontquestion = database.getCollection("question");
+	      Document question = collectiontquestion.find(eq("qId", qid)).first();
+	      ArrayList<Document> va = (ArrayList<Document>) question.get("answers");
+	      answer.append("aid", va.size());
+	      va.add(answer);
+	                        
+	      collectiontquestion.deleteOne(eq("qId", question.get("qId")));                
+	      Document info = new Document("question", question.get("question"))
+	          .append("tags", question.get("tags"))
+	          .append("date", question.get("date"))
+	          .append("questioner", question.get("questioner"))
+	          .append("qId", question.get("qId"))
+	          .append("answers", va);
+	      collectiontquestion.insertOne(info);
+	  	try {
+			sOutput.writeObject(new Message(Message.ANSWER));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    }
+	  }
+
+	private synchronized void showquistionforanswer(int type, Document q, Document user, ObjectOutputStream sOutput) {
+		if (type == Message.QUESTIONTOANSWER) {
+			MongoCollection<Document> collectiontquestion = database.getCollection("question");
+			// System.out.println(q.toJson());
+			for (Document d : collectiontquestion.find(eq("qId", q.getInteger("qId")))) {
+				// System.out.println(d.toJson());
+				String s = d.toJson();
+				try {
+					sOutput.writeObject(new Message(Message.QUESTIONTOANSWER, d, user));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+
+		}
+	}
+	
+	private synchronized void answerSHOWTAG(int type,ObjectOutputStream sOutput) {
+		MongoCollection<Document> collectiontag = database.getCollection("tag");
+		StringBuilder sb = new StringBuilder();
+		for(Document d : collectiontag.find()){
+			sb.append( d.getString("tag")+"  ");
+		}
+		try {
+			sOutput.writeObject(new Message(Message.SHOWTAG,sb.toString()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	private synchronized void answerSHOWTHISTAG(int type,String t,ObjectOutputStream sOutput) {
+			MongoCollection<Document> collectiontquestion = database.getCollection("question");
+			collectiontquestion.createIndex(Indexes.text("tags"));           
+		    Iterator<Document> itrator = collectiontquestion.find(Filters.text(t))
+		    												.sort(new Document("date",-1))
+		    												.iterator();		    	
+		      while(itrator.hasNext()){	
+		        Document d = itrator.next();
+		        String s = d.toJson();
+				try {
+					sOutput.writeObject(new Message(Message.SEARCH, s));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		      }
+		
+	}
+	private synchronized void answerRATE(int type,Document q,int aid,ObjectOutputStream sOutput) {
+		MongoCollection<Document> collectiontquestion = database.getCollection("question");
+		Document question = collectiontquestion.find(eq("qId", q.getInteger("qId"))).first();
+		ArrayList<Document> va = (ArrayList<Document>) question.get("answers");
+		ArrayList<Document> va2 = new ArrayList<>();
+	    for( Document ans : va){
+	    	
+	    	if(ans.getInteger("aid").equals(aid)){
+	    		ans.append("Confirmation", true);
+	    		va2.add(ans);
+	    		break;
+	    	}else{
+	    		va2.add(ans);
+	    	}
+	    }
+	   
+	      collectiontquestion.deleteOne(eq("qId", question.get("qId")));                
+	      Document info = new Document("question", question.get("question"))
+	          .append("tags", question.get("tags"))
+	          .append("date", question.get("date"))
+	          .append("questioner", question.get("questioner"))
+	          .append("qId", question.get("qId"))
+	          .append("answers", va2);
+	      collectiontquestion.insertOne(info);
+	  	try {
+			sOutput.writeObject(new Message(type));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	    
+		
+	}
+	 private synchronized void answerRATE1(int type,Document q,Document user,ObjectOutputStream sOutput) {
+		 MongoCollection<Document> collectiontquestion = database.getCollection("question");
+	     Document question = collectiontquestion.find(eq("qId", q.getInteger("qId"))).first();
+	     System.out.println( ( (ArrayList<Document>)  question.get("answers")).size()); 
+	     if(question.getString("questioner").equals(user.getString("username")) &&
+	    		 ( (ArrayList<Document>)  question.get("answers")).size()!=0 ){
+	    	 try {
+	 			sOutput.writeObject(new Message(type,question,true));
+	 		} catch (IOException e) {
+	 			// TODO Auto-generated catch block
+	 			e.printStackTrace();
+	 		} 
+	    	 
+	     }	else{
+	    	 try {
+		 			sOutput.writeObject(new Message(type,question,false));
+		 		} catch (IOException e) {
+		 			// TODO Auto-generated catch block
+		 			e.printStackTrace();
+		 		}
+	     }
+	    }	
+		
+
+	// for a Client who logoff using the LOGOUT message
+	private synchronized void remove(int id) {
+		// scan the array list until we found the Id
+		for (int i = 0; i < al.size(); ++i) {
+			ClientThread ct = al.get(i);
+			// found it
+			if (ct.id == id) {
+				al.remove(i);
+				return;
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		// start Server on port 8000 unless a PortNumber is specified
+		int portNumber = 8000;
+
+		// create a Server object and start it
+		Server server = new Server(portNumber);
+		server.start();
+	}
+
+	/** One instance of this thread will run for each Client */
+	class ClientThread extends Thread {
+		// the socket where to listen/talk
+		Socket socket;
+		ObjectInputStream sInput;
+		ObjectOutputStream sOutput;
+		// my unique id (easier for disconnection)
+		int id;
+		// the Username of the Client
+		String username;
+		// the only type of message a will receive
+		Message cm;
+		// the date I connect
+		String date;
+
+		ClientThread(Socket socket) {
+			// a unique id
+			id = ++uniqueId;
+			this.socket = socket;
 			/* Creating both Data Stream */
-            System.out.println("Thread trying to create Object Input/Output Streams");
-            try
-            {
-                // create output first
-                sOutput = new ObjectOutputStream(socket.getOutputStream());
-                sInput  = new ObjectInputStream(socket.getInputStream());
-                // read the username
-                username = (String) sInput.readObject();
-                display(username + " just connected.");
-            }
-            catch (IOException e) {
-                display("Exception creating new Input/output Streams: " + e);
-                return;
-            }
-            // have to catch ClassNotFoundException
-            // but I read a String, I am sure it will work
-            catch (ClassNotFoundException ignored) {
-            }
-            date = new Date().toString() + "\n";
-        }
+			System.out.println("Thread trying to create Object Input/Output Streams");
+			try {
+				// create output first
+				sOutput = new ObjectOutputStream(socket.getOutputStream());
+				sInput = new ObjectInputStream(socket.getInputStream());
+				// read the username
+				username = (String) sInput.readObject();
+				display(username + " just connected.");
+			} catch (IOException e) {
+				display("Exception creating new Input/output Streams: " + e);
+				return;
+			}
+			// have to catch ClassNotFoundException
+			// but I read a String, I am sure it will work
+			catch (ClassNotFoundException ignored) {
+			}
+			date = new Date().toString() + "\n";
+		}
 
-        // what will run forever
-        public void run() {
-            // to loop until LOGOUT
-            boolean keepGoing = true;
-            while(keepGoing) {
-                // read a String (which is an object)
-                try {
-                    cm = (Message) sInput.readObject();
-                }
-                catch (IOException e) {
-                    display(username + " Exception reading Streams: " + e);
-                    break;
-                }
-                catch(ClassNotFoundException e2) {
-                    break;
-                }
-                // the message part of the Message
-                Document info = cm.getInfo();
+		// what will run forever
+		public void run() {
+			// to loop until LOGOUT
+			boolean keepGoing = true;
+			while (keepGoing) {
+				// read a String (which is an object)
+				try {
+					cm = (Message) sInput.readObject();
+				} catch (IOException e) {
+					display(username + " Exception reading Streams: " + e);
+					break;
+				} catch (ClassNotFoundException e2) {
+					break;
+				}
+				// the message part of the Message
+				Document info = null;
+				//if (cm.getType() != Message.QUESTION && cm.getType() != Message.ANSWER )
+					info = cm.getInfo();
 
-                // Switch on the type of message receive
-                switch(cm.getType()) {
+				// Switch on the type of message receive
+				switch (cm.getType()) {
 
-                    case Message.SUGNUP:
-                    	System.out.println("how are you");
-                        answer(cm.getType(),info, sOutput);
-                        break;
-//                    case Message.LOGOUT:
-//                        display(username + " disconnected with a LOGOUT message.");
-//                        keepGoing = false;
-//                        break;
-//                    case Message.LOGIN:
-//                        writeMsg("List of the users connected at " + sdf.format(new Date()) + "\n");
-//                        // scan al the users connected
-//                        for(int i = 0; i < al.size(); ++i) {
-//                            ClientThread ct = al.get(i);
-//                            writeMsg((i+1) + ") " + ct.username + " since " + ct.date);
-//                        }
-//                        break;
-                }
-            }
-            // remove myself from the arrayList containing the list of the
-            // connected Clients
-            remove(id);
-            close();
-        }
+				case Message.SUGNUP:
+				case Message.LOGIN:
+					answer(cm.getType(), info, sOutput);
+					break;
+				case Message.SEARCH:
+				case Message.SEARCH2:
+					answer(cm.getType(), info, sOutput);
+					break;
+				case Message.ASK:
+					System.out.println("Server.ClientThread.run()");
+					answer(cm.getType(), info, sOutput);
+					break;
+				case Message.SHOWALL:
+					answer(cm.getType(), info, sOutput);
+					break;
+				case Message.SHOWFAV:
+					answer(cm.getType(), info, sOutput);
+					break;
+				case Message.QUESTIONTOANSWER:
+					Document q = cm.getqu();
+					Document user = cm.getUser();
+					showquistionforanswer(cm.getType(), q, user, sOutput);
+					break;
+				case Message.ANSWER:
+					Document ans = cm.getanswer();
+					int qid = cm.getQid();
+					answeraquistion(cm.getType(), ans, qid, sOutput);
+					break;
+				case Message.LOGOUT:
+					answer(cm.getType(),info,sOutput);
+					break;
+				case Message.DELETE:
+					answer(cm.getType(),info,sOutput);
+					break;
+				case Message.SHOWTAG:
+					answerSHOWTAG(cm.getType(),sOutput);
+					break;
+				case Message.SHOWTHISTAG:
+					answerSHOWTHISTAG(cm.getType(),cm.getquestion(),sOutput);
+					break;
+				case Message.RATE:
+					answerRATE(cm.getType(),cm.getqu(),cm.getAid(),sOutput);
+					break;
+				case Message.RATE1:
+					answerRATE1(cm.getType(),cm.getqu(),cm.getUser(),sOutput);
+					break;
+					
+					
+					
 
-        // try to close everything
-        private void close() {
-            // try to close the connection
-            try {
-                if(sOutput != null) sOutput.close();
-            }
-            catch(Exception ignored) {}
-            try {
-                if(sInput != null) sInput.close();
-            }
-            catch(Exception ignored) {}
-            try {
-                if(socket != null) socket.close();
-            }
-            catch (Exception ignored) {}
-        }
+					// case Message.LOGOUT:
+					// display(username + " disconnected with a LOGOUT
+					// message.");
+					// keepGoing = false;
+					// break;
 
-        /*
-         * Write a String to the Client output stream
-         */
-        private boolean writeMsg(String msg) {
-            // if Client is still connected send the message to it
-            if(!socket.isConnected()) {
-                close();
-                return false;
-            }
-            // write the message to the stream
-            try {
-                sOutput.writeObject(msg);
-            }
-            // if an error occurs, do not abort just inform the user
-            catch(IOException e) {
-                display("Error sending message to " + username);
-                display(e.toString());
-            }
-            return true;
-        }
-    }
+				}
+			}
+			// remove myself from the arrayList containing the list of the
+			// connected Clients
+			remove(id);
+			close();
+		}
+
+		// try to close everything
+		private void close() {
+			// try to close the connection
+			try {
+				if (sOutput != null)
+					sOutput.close();
+			} catch (Exception ignored) {
+			}
+			try {
+				if (sInput != null)
+					sInput.close();
+			} catch (Exception ignored) {
+			}
+			try {
+				if (socket != null)
+					socket.close();
+			} catch (Exception ignored) {
+			}
+		}
+
+		/*
+		 * Write a String to the Client output stream
+		 */
+		private boolean writeMsg(String msg) {
+			// if Client is still connected send the message to it
+			if (!socket.isConnected()) {
+				close();
+				return false;
+			}
+			// write the message to the stream
+			try {
+				sOutput.writeObject(msg);
+			}
+			// if an error occurs, do not abort just inform the user
+			catch (IOException e) {
+				display("Error sending message to " + username);
+				display(e.toString());
+			}
+			return true;
+		}
+	}
 }
-
-

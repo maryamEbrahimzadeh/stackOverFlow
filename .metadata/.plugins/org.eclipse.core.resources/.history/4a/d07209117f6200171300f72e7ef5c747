@@ -1,0 +1,54 @@
+import java.io.*;
+
+import org.bson.Document;
+import org.bson.conversions.Bson;
+
+public class Message implements Serializable {
+
+    static final int SEARCH = 0, LOGIN = 1, LOGOUT = 2, REGISTER = 3,SUGNUP = 4,ASK=5,SHOWALL=6;;
+    private int type;
+    //public String messages;
+    private Document info,user;
+    private boolean islogin;
+    private String q;
+
+    // constructor
+//    Message(int type, String message) {
+//        this.type = type;
+//        this.messages = message;
+//    }
+    Message(int type, Document info) {
+        this.type = type;
+        this.info = info;
+    }
+    Message(int type) {
+        this.type = type;
+    }
+    Message(int type, boolean islogin, Document user) {
+        this.type = type;
+        this.islogin = islogin;
+        this.user = user;
+    }
+    Message(int type, String q) {
+        this.type = type;
+        this.q = q;
+    }
+
+    // getters
+    int getType() {
+        return type;
+    }
+    Document getInfo() {
+        return info;
+    }
+    Document getUser() {
+        return user;
+    }
+    boolean getIslogin() {
+        return islogin;
+    }
+    String getquestion(){
+    	return q;
+    }
+}
+

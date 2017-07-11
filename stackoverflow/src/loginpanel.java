@@ -24,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import org.bson.Document;
 
 
 
@@ -45,13 +46,15 @@ public class loginpanel extends JPanel implements MouseListener,KeyListener{
 	FileInputStream input;
 	File file;
 	Client c ;
+	Frame f;
 	
 	
 	
 	
 	
-	public loginpanel(Frame f){
-		
+	public loginpanel(Frame f,Client c){
+		this.f =f;
+		this.c = c;
 		
 		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setSize(d.width/2,d.height/2);
@@ -117,12 +120,12 @@ public class loginpanel extends JPanel implements MouseListener,KeyListener{
 		
 		this.add(p0);
 		
-		display=new JTextArea();
-		display.setFont(new Font("SansSerif", Font.ITALIC,30));
-        JScrollPane scroll = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        scroll.setMinimumSize(new Dimension(160, 200));
-        scroll.setPreferredSize(new Dimension(160, 200));
-        this.add(scroll);
+//		display=new JTextArea();
+//		display.setFont(new Font("SansSerif", Font.ITALIC,30));
+//        JScrollPane scroll = new JScrollPane(display, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+//        scroll.setMinimumSize(new Dimension(160, 200));
+//        scroll.setPreferredSize(new Dimension(160, 200));
+//        this.add(scroll);
 
 
 		
@@ -153,9 +156,9 @@ public class loginpanel extends JPanel implements MouseListener,KeyListener{
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
 		if(e.getSource()==signin){
-			this.setVisible(false);
-			
-			
+			Document doc = new  Document("username",usernametext.getText()).append("password",passtext.getText());
+			c.sendMessage(new Message(Message.LOGIN, doc));
+			System.out.println("loginpanel.mousePressed()");			
 		}
 		
 	}
