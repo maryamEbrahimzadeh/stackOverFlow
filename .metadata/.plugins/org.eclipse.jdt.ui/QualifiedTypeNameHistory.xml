@@ -13,7 +13,6 @@
 <fullyQualifiedTypeName name="MainFrame"/>
 <fullyQualifiedTypeName name="javax.swing.plaf.synth.SynthSpinnerUI"/>
 <fullyQualifiedTypeName name="java.lang.StrictMath"/>
-<fullyQualifiedTypeName name="javax.print.Doc"/>
 <fullyQualifiedTypeName name="org.bson.conversions.Bson"/>
 <fullyQualifiedTypeName name="javax.print.attribute.DocAttribute"/>
 <fullyQualifiedTypeName name="java.awt.event.ActionListener"/>
@@ -28,8 +27,6 @@
 <fullyQualifiedTypeName name="loginpanel"/>
 <fullyQualifiedTypeName name="java.lang.Iterable"/>
 <fullyQualifiedTypeName name="java.util.Arrays"/>
-<fullyQualifiedTypeName name="java.util.Vector"/>
-<fullyQualifiedTypeName name="javax.swing.JMenuItem"/>
 <fullyQualifiedTypeName name="com.mongodb.client.model.Indexes"/>
 <fullyQualifiedTypeName name="com.mongodb.client.model.Filters"/>
 <fullyQualifiedTypeName name="com.mongodb.client.model.Projections"/>
@@ -38,12 +35,19 @@
 <fullyQualifiedTypeName name="TagPanel"/>
 <fullyQualifiedTypeName name="javax.swing.JTextArea"/>
 <fullyQualifiedTypeName name="java.lang.StringBuilder"/>
-<fullyQualifiedTypeName name="java.lang.String"/>
 <fullyQualifiedTypeName name="java.lang.ArrayStoreException"/>
-<fullyQualifiedTypeName name="java.lang.Integer"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="Message"/>
-<fullyQualifiedTypeName name="org.bson.Document"/>
-<fullyQualifiedTypeName name="answerPanel"/>
 <fullyQualifiedTypeName name="RatePanel"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="java.awt.Frame"/>
+<fullyQualifiedTypeName name="answerPanel"/>
+<fullyQualifiedTypeName name="AnswerEdit"/>
+<fullyQualifiedTypeName name="javax.print.Doc"/>
+<fullyQualifiedTypeName name="javax.swing.JMenu"/>
+<fullyQualifiedTypeName name="javax.swing.JMenuItem"/>
+<fullyQualifiedTypeName name="ProfilePanel"/>
+<fullyQualifiedTypeName name="Message"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.lang.String"/>
+<fullyQualifiedTypeName name="java.util.Vector"/>
+<fullyQualifiedTypeName name="org.bson.Document"/>
 </qualifiedTypeNameHistroy>

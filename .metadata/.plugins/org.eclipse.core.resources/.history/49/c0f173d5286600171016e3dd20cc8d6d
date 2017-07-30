@@ -1,0 +1,220 @@
+//package finaldbproject;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Vector;
+
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+import org.bson.Document;
+
+public class ProfilePanel extends JPanel implements MouseListener, KeyListener {
+
+    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    JLabel j1, j0;
+    JTextField t1;
+    JButton browse;
+    JTextArea display;
+    JLabel j2;
+    JLabel pass, email, username, name, favoritetxt;
+    JTextField t2, passtext, emailtext, usernametext, nametext;
+    JButton proEdit;
+    JFileChooser filechooser;
+    FileInputStream input;
+    File file;
+    Frame f;
+    Client c;
+    Vector<Document> favorite = new Vector<Document>();
+    JRadioButton option1 = new JRadioButton("java");
+    JRadioButton option2 = new JRadioButton("sql");
+    JRadioButton option3 = new JRadioButton("C");
+    JRadioButton option4 = new JRadioButton("C++");
+    private JLabel intrest;
+
+    public ProfilePanel (Frame f, Client c,Document user) {
+        this.f = f;
+        this.c = c;
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(d.width / 2, d.height / 2);
+        //------------------------------GUI---------------------------------------�
+//    BorderLayout b = new.CENTER_ALIGNMENT
+
+        GridLayout layoutthispanel = new GridLayout(3, 1);
+        this.setLayout(layoutthispanel);
+
+        JPanel p0 = new JPanel();
+        GridLayout layoutthisuppanel = new GridLayout(4, 1);
+        p0.setLayout(layoutthisuppanel);
+
+        j0 = new JLabel("StackoverFlow", SwingConstants.CENTER);
+        j0.setFont(new Font("SansSerif", Font.ITALIC, 60));
+        p0.add(j0);
+
+        JPanel p2 = new JPanel();
+        GridLayout layout2 = new GridLayout(1, 4);
+        p2.setLayout(layout2);
+
+        name = new JLabel("Enter Name", SwingConstants.CENTER);
+        p2.add(name);
+        nametext = new JTextField();
+        nametext.setText(user.getString("name"));
+        nametext.setFont(new Font("SansSerif", Font.ITALIC, 25));
+        p2.add(nametext);
+
+        username = new JLabel("Enter User name", SwingConstants.CENTER);
+        p2.add(username);
+        usernametext = new JTextField();
+        usernametext.setText(user.getString("username"));
+        usernametext.setFont(new Font("SansSerif", Font.ITALIC, 25));
+        p2.add(usernametext);
+
+        email = new JLabel("Enter Email", SwingConstants.CENTER);
+        p2.add(email);
+        emailtext = new JTextField();
+        emailtext.setText(user.getString("email"));
+        emailtext.setFont(new Font("SansSerif", Font.ITALIC, 25));
+        p2.add(emailtext);
+
+        pass = new JLabel("Enter password", SwingConstants.CENTER);
+        p2.add(pass);
+        passtext = new JTextField();
+        passtext.setFont(new Font("SansSerif", Font.ITALIC, 25));
+        p2.add(passtext);
+
+        
+
+        p2.setVisible(true);
+        p0.add(p2);
+
+        JPanel p4 = new JPanel();
+        GridLayout layout4 = new GridLayout(1, 5);
+        p4.setLayout(layout4);
+        intrest = new JLabel("choose your intrest", SwingConstants.CENTER);
+        p4.add(intrest);
+        p4.add(option1);
+        p4.add(option2);
+        p4.add(option3);
+        p4.add(option4);
+        p0.add(p4);
+//        option1.addActionListener(listener);
+//        option2.addActionListener(listener);
+//        option3.addActionListener(listener);
+//        option4.addActionListener(listener);
+        JPanel p3 = new JPanel();
+        BorderLayout layout3 = new BorderLayout();
+        p3.setLayout(layout3);
+        proEdit = new JButton("Edit profile");
+        Dimension d1 = new Dimension(d.width / 15, d.height / 30);
+        proEdit.setPreferredSize(d1);
+        proEdit.addMouseListener(this);
+        p3.add(proEdit);
+        p3.setVisible(true);
+        p0.add(p3);
+
+        this.add(p0);
+
+        this.setBackground(Color.getHSBColor(154, 254, 25));
+        p0.addKeyListener(this);
+
+        //----------------------------end GUI------------------------------------
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        // TODO Auto-generated method stub
+        if (e.getSource() == proEdit
+                && !nametext.getText().equals("")
+                && !usernametext.getText().equals("")
+                && !emailtext.getText().equals("")
+                && !passtext.getText().equals("")) {
+             if(option1.isSelected()){
+            	 
+               favorite.addElement(new Document("intrest",option1.getText()));
+           }
+           if(option2.isSelected()){
+               favorite.addElement(new Document("intrest",option2.getText()));
+           }
+           if(option3.isSelected()){
+               favorite.addElement(new Document("intrest",option3.getText()));
+           }
+           if(option4.isSelected()){
+               favorite.addElement(new Document("intrest",option4.getText()));
+           }
+          
+            this.setVisible(false);
+//          
+            Document doc = new Document("name", nametext.getText())
+                    .append("username", usernametext.getText())
+                    .append("email", emailtext.getText())
+                    .append("password", passtext.getText())
+                    .append("islogin", "false")
+                    .append("score", 0)
+                    .append("intrest", favorite);
+            c.sendMessage(new Message(Message.UPDATEPRO, doc));
+            f.setVisible(true);
+
+        }
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent arg0) {
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent arg0) {
+
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+}

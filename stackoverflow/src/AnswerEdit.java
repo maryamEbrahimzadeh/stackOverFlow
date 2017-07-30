@@ -1,0 +1,171 @@
+//package finaldbproject;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JMenu;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import org.bson.Document;
+
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+
+public class AnswerEdit extends JPanel implements MouseListener, KeyListener, ActionListener {
+
+	Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+	JTextField t1;
+	JButton search, edit;
+	JTextArea display;
+	JTextField searchQuestion, answerid;
+	Client c;
+	Frame f;
+	JMenuBar menubar = new JMenuBar();
+	JMenuItem allQus;
+	JMenuItem favQus;
+	JMenu logout, deleteAccount;
+	JTextField asktag;
+	Document question;
+	JTextField updatedanswer;
+	JTextField qusId;
+	JMenuItem tagQus;
+	Document q;
+	JMenuItem exit;
+	JMenuItem delete;
+	TagPanel tp;
+	JTextArea answers;
+	JButton del;
+	Document user;
+
+	public AnswerEdit(Frame f, Client c,Document question,Document user) {
+		this.f = f;
+		this.c = c;
+		this.question= question;
+		this.user = user;
+		// ------------------------------GUI---------------------------------------�
+	
+		GridLayout layoutthispanel = new GridLayout(1, 1);
+		this.setLayout(layoutthispanel);
+
+		JPanel p0 = new JPanel();
+		GridLayout layoutthisuppanel = new GridLayout(6, 1);
+		p0.setLayout(layoutthisuppanel);
+		p0.add(menubar);
+
+		Dimension d1 = new Dimension(d.width / 15, d.height / 30);
+		
+		
+
+		edit = new JButton("edit it");
+		edit.setPreferredSize(d1);
+		edit.addMouseListener(this);
+		edit.addActionListener(this);
+
+		del = new JButton("Delete it");
+		del.setPreferredSize(d1);
+		del.addMouseListener(this);
+		del.addActionListener(this);
+
+
+		answerid = new JTextField("enter your Intended answer Id");
+		answerid.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		
+		updatedanswer = new JTextField("enter your updated answer ");
+		updatedanswer.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		
+		answers = new JTextArea("answers:\n");
+		ArrayList<Document> answers2 = (ArrayList<Document>) question.get("answers");
+		if(answers2.size()!=0)
+			for( Document  d: answers2){	
+				answers.append(d.getInteger("aid")+"   "+d.getString("answer")+ "  username:"+d.getString("username") + "\n");
+			}
+		answers.setFont(new Font("SansSerif", Font.ITALIC, 20));
+		
+
+		
+		p0.add(answerid);
+		p0.add(answers);
+		p0.add(edit);
+		p0.add(del);
+		p0.add(updatedanswer);
+		this.add(p0);
+		this.setBackground(Color.getHSBColor(154, 254, 25));
+		p0.addKeyListener(this);
+
+		// ----------------------------end GUI------------------------------------
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		  if(e.getSource()== edit){
+			  Document newans =  new Document("answer",updatedanswer.getText())
+				         		.append("username", user.getString("username"));
+				c.sendMessage(new Message(Message.ANSWEREDIT,question,Integer.parseInt(answerid.getText()),newans));
+			}else if(e.getSource()==del){
+				c.sendMessage(new Message(Message.DELETEA,question,Integer.parseInt(answerid.getText())));
+			}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+
+	}
+
+	
+
+}

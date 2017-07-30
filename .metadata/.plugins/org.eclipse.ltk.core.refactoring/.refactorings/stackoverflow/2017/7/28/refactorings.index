@@ -4,3 +4,10 @@
 1499601678230	Rename field 'answer'
 1499605263806	Rename method 'answer3'
 1499605601027	Rename method 'answer2'
+1499753580850	Delete element
+1499753938230	Rename field 'rate'
+1499756684422	Rename method 'answeredit'
+1499757822519	Rename local variable 'qid'
+1499760549412	Rename local variable 'newanswer'
+1499768433304	Rename field 'prifilei'
+1499770284751	Rename field 'signup'
